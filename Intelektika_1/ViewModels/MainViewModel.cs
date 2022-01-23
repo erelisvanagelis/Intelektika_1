@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Threading;
 
 namespace Intelektika_1.ViewModels
 {
@@ -19,20 +19,15 @@ namespace Intelektika_1.ViewModels
         private BindableCollection<DataSetDistanceModel> _dataSetDistanceModels;
         private BindableCollection<string> _sports;
         private BindableCollection<string> _positions;
-        private string _selectedSport;
-        private string _selectedPosition;
-        private string _addHeight = "";
-        private string _addWeight = "";
-        private string _addSport = "";
-        private string _addPosition = "";
-        private string _defineHeight = "";
-        private string _defineWeight = "";
+
+        private string _height = "";
+        private string _weight = "";
+        private string _sport = "";
+        private string _position = "";
+
+        private DispatcherTimer dispatcherTimer = new DispatcherTimer();
+        private Stopwatch stopwatch = new Stopwatch();
         private string _time = "";
-
-        private string _test = "";
-        private BindableCollection<string> _tests = new();
-
-
 
         public BindableCollection<DataSetModel> DataSetModels
         {
@@ -42,7 +37,6 @@ namespace Intelektika_1.ViewModels
                 NotifyOfPropertyChange(() => DataSetModels);
             }
         }
-
         public BindableCollection<string> Sports
         {
             get => _sports; set
@@ -51,66 +45,6 @@ namespace Intelektika_1.ViewModels
                 NotifyOfPropertyChange(() => Sports);
             }
         }
-
-        public string AddHeight
-        {
-            get => _addHeight; set
-            {
-                _addHeight = value;
-                NotifyOfPropertyChange(() => AddHeight);
-            }
-        }
-        public string AddWeight
-        {
-            get => _addWeight; set
-            {
-                _addWeight = value;
-                NotifyOfPropertyChange(() => AddWeight);
-            }
-        }
-        public string AddSport
-        {
-            get => _addSport; set
-            {
-                _addSport = value;
-                NotifyOfPropertyChange(() => AddSport);
-            }
-        }
-        public string AddPosition
-        {
-            get => _addPosition; set
-            {
-                _addPosition = value;
-                NotifyOfPropertyChange(() => AddPosition);
-            }
-        }
-
-        public string SelectedSport
-        {
-            get => _selectedSport; set
-            {
-                _selectedSport = value;
-                NotifyOfPropertyChange(() => SelectedSport);
-            }
-        }
-
-        public string DefineHeight
-        {
-            get => _defineHeight; set
-            {
-                _defineHeight = value;
-                NotifyOfPropertyChange(() => DefineHeight);
-            }
-        }
-        public string DefineWeight
-        {
-            get => _defineWeight; set
-            {
-                _defineWeight = value;
-                NotifyOfPropertyChange(() => DefineWeight);
-            }
-        }
-
         public BindableCollection<DataSetDistanceModel> DataSetDistanceModels
         {
             get => _dataSetDistanceModels; set
@@ -119,16 +53,6 @@ namespace Intelektika_1.ViewModels
                 NotifyOfPropertyChange(() => DataSetDistanceModels);
             }
         }
-
-        public string SelectedPosition
-        {
-            get => _selectedPosition; set
-            {
-                _selectedPosition = value;
-                NotifyOfPropertyChange(() => SelectedPosition);
-            }
-        }
-
         public BindableCollection<string> Positions
         {
             get => _positions; set
@@ -137,7 +61,38 @@ namespace Intelektika_1.ViewModels
                 NotifyOfPropertyChange(() => Positions);
             }
         }
-
+        public string Height
+        {
+            get => _height; set
+            {
+                _height = value;
+                NotifyOfPropertyChange(() => Height);
+            }
+        }
+        public string Weight
+        {
+            get => _weight; set
+            {
+                _weight = value;
+                NotifyOfPropertyChange(() => Weight);
+            }
+        }
+        public string Sport
+        {
+            get => _sport; set
+            {
+                _sport = value;
+                NotifyOfPropertyChange(() => Sport);
+            }
+        }
+        public string Position
+        {
+            get => _position; set
+            {
+                _position = value;
+                NotifyOfPropertyChange(() => Position);
+            }
+        }
         public string Time
         {
             get => _time; set
@@ -147,164 +102,119 @@ namespace Intelektika_1.ViewModels
             }
         }
 
-        public string Test
-        {
-            get => _test; set
-            {
-                _test = value;
-                NotifyOfPropertyChange(() => Test);
-            }
-        }
-        public BindableCollection<string> Tests
-        {
-            get => _tests; set
-            {
-                _tests = value;
-                NotifyOfPropertyChange(() => Tests);
-            }
-        }
-
         public MainViewModel()
         {
-            Tests.Add("test0");
-            Tests.Add("test1");
-            Tests.Add("test2");
-            Tests.Add("test3");
-            Tests.Add("test4");
             DataSetModels = new BindableCollection<DataSetModel>();
             DataSetDistanceModels = new BindableCollection<DataSetDistanceModel>();
             Sports = new BindableCollection<string>();
             Positions = new BindableCollection<string>();
-            GetDataFromDB();
-        }
 
-        public void TraceTest()
-        {
-            Trace.WriteLine(Test);
-        }
+            dispatcherTimer.Tick += new EventHandler(dt_Tick);
+            dispatcherTimer.Interval = new TimeSpan(0, 0, 0, 0, 1);
+            dispatcherTimer.Start();
 
-        public void GetDataFromDB()
-        {
-            DataSetModels.Clear();
-            DataSetDistanceModels.Clear();
-            Sports.Clear();
-            Positions.Clear();
-
-            var dataSets = DataAcess.LoadDataSets();
-            var sports = DataAcess.LoadSports();
-            DataSetModels.AddRange(dataSets);
-            Sports.AddRange(sports);
-            SelectedSport = Sports.FirstOrDefault();
+            ResetWindow();
         }
 
         public void ReadJsonFile(string path)
         {
             string jsonData = File.ReadAllText(path);
-            DataSetModel[] sets = DataSetModel.FromJson(jsonData);
-
-            AddDataSets(sets);
-            GetDataFromDB();
-        }
-
-        public static void AddDataSets(DataSetModel[] dataSets)
-        {
+            DataSetModel[] dataSets = DataSetModel.FromJson(jsonData);
             foreach (DataSetModel dsm in dataSets)
             {
-                AddDataSet(dsm);
+                DataAcess.SaveDataSet(dsm);
             }
+            ResetWindow();
         }
 
-        public static bool CanAddData(string addHeight, string addWeight, string addSport, string addPosition)
+        public bool CanAddData(string height, string weight, string sport, string position) => !AreStringsNullOrEmpty(height, weight, sport, position);
+        public void AddData(string height, string weight, string sport, string position)
         {
-            Trace.WriteLine($"AddData: {addHeight} {addWeight} {addSport} {addPosition}");
-            if (String.IsNullOrWhiteSpace(addHeight) || String.IsNullOrWhiteSpace(addWeight) || String.IsNullOrWhiteSpace(addSport) || String.IsNullOrWhiteSpace(addPosition))
+            Trace.WriteLine($"AddData: {Height}, {Weight}, {Sport}, {Position},");
+            var dsm = new DataSetModel()
             {
-                return false;
-            }
-            return true;
+                Height = Convert.ToInt32(height),
+                Weight = Convert.ToInt32(weight),
+                Sport = sport,
+                Position = position,
+            };
+
+            DataAcess.SaveDataSet(dsm);
+            ResetWindow();
         }
 
-        public void AddData(string addHeight, string addWeight, string addSport, string addPosition)
+        public void ClearInputData()
         {
-            Trace.WriteLine($"AddData: {AddHeight} {AddWeight} {AddSport} {AddPosition}");
-            DataSetModel dataSet = new();
-            dataSet.Height = Convert.ToInt32(addHeight);
-            dataSet.Weight = Convert.ToInt32(addWeight);
-            dataSet.Sport = addSport;
-            dataSet.Position = addPosition;
-            AddDataSet(dataSet);
-            GetDataFromDB();
-            ClearAddData();
+            Height = "";
+            Weight = "";
+            Sport = "";
+            Position = "";
         }
 
-        public void ClearAddData()
+        public void ResetWindow()
         {
-            AddHeight = "";
-            AddWeight = "";
-            AddSport = "";
-            AddPosition = "";
-        }
+            ClearInputData();
+            DataSetModels.Clear();
+            DataSetDistanceModels.Clear();
+            Sports.Clear();
+            Positions.Clear();
 
-        public static void AddDataSet(DataSetModel dataSet)
-        {
-            DataAcess.SaveDataSet(dataSet);
+            DataSetModels.AddRange(DataAcess.LoadDataSets());
+            Sports.AddRange(DataAcess.LoadSports());
+            Sport = Sports.FirstOrDefault();
         }
 
         public void ClearDataSets()
         {
             DataAcess.DeleteDBEntries();
-            GetDataFromDB();
+            ResetWindow();
         }
 
-        public bool CanDefinePosition(string defineHeight, string defineWeight, string selectedSport)
+        public bool CanDefinePosition(string height, string weight, string sport) => !AreStringsNullOrEmpty(height, weight, sport);
+        public async void DefinePosition(string height, string weight, string sport)
         {
-            Trace.WriteLine($"CanDefinePosition: {defineHeight}, {defineWeight}, {selectedSport}");
-            if (String.IsNullOrWhiteSpace(defineHeight) || String.IsNullOrWhiteSpace(defineWeight) || String.IsNullOrWhiteSpace(SelectedSport))
-            {
-                return false;
-            }
-            return true;
-
-        }
-
-        public async void DefinePosition(string defineHeight, string defineWeight, string selectedSport)
-        {
-            Trace.WriteLine($"DefinePosition: {SelectedSport}");
+            stopwatch.Reset();
+            stopwatch.Start();
             var dsm = new DataSetModel
             {
-                Weight = Convert.ToInt32(defineWeight),
-                Height = Convert.ToInt32(defineHeight),
-                Sport = SelectedSport
+                Weight = Convert.ToInt32(weight),
+                Height = Convert.ToInt32(height),
+                Sport = sport
             };
-            Stopwatch stopWatch = new();
-            stopWatch.Start();
+
+            //await Task.Delay(1000);
             var result = await Task.FromResult(DataClasification.GetClosestSets(DataSetModels.ToList(), dsm));
-            Trace.WriteLine(result.Count);
-            stopWatch.Stop();
-            TimeSpan ts = stopWatch.Elapsed;
-            Time = ts.ToString();
             var ordered = result.OrderBy(x => x.Distance).ToList();
             DataSetDistanceModels.Clear();
             Positions.Clear();
             DataSetDistanceModels.AddRange(ordered);
-            SelectedPosition = DataSetDistanceModels.First().Position;
+            Position = DataSetDistanceModels.First().Position;
             Positions.AddRange(ordered.ExtractDistancePosition());
+
+            stopwatch.Stop();
+            TimeSpan ts = stopwatch.Elapsed;
+            Time = String.Format("{0:00}:{1:00}", ts.Seconds, ts.Milliseconds);
         }
 
-        public void AddDefinedDataSet()
+        void dt_Tick(object sender, EventArgs e)
         {
-            Trace.WriteLine($"AddDefinedDataSet: {SelectedSport}");
-
+            if (stopwatch.IsRunning)
+            {
+                TimeSpan ts = stopwatch.Elapsed;
+                Time = String.Format("{0:00}:{1:00}", ts.Seconds, ts.Milliseconds);
+            }
         }
 
-        public void ClearDefined()
+        public static bool AreStringsNullOrEmpty(params string[] strings)
         {
-            DefineHeight = "";
-            DefineWeight = "";
-            SelectedSport = Sports.First();
-            SelectedPosition = null;
-            Positions.Clear();
-            DataSetDistanceModels.Clear();
+            foreach (string s in strings)
+            {
+                if (String.IsNullOrWhiteSpace(s))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
