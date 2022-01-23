@@ -1,0 +1,92 @@
+[
+    {
+        "height": 184,
+        "weight": 82,
+        "sport": "football",
+        "position": "FW"
+    },
+    {
+        "height": 180,
+        "weight": 75,
+        "sport": "football",
+        "position": "MF"
+    },
+    {
+        "height": 162,
+        "weight": 72,
+        "sport": "football",
+        "position": "DF"
+    },
+    {
+        "height": 185,
+        "weight": 78,
+        "sport": "football",
+        "position": "MF"
+    },
+    {
+        "height": 191,
+        "weight": 90,
+        "sport": "football",
+        "position": "GK"
+    },
+    {
+        "height": 190,
+        "weight": 80,
+        "sport": "football",
+        "position": "GK"
+    },
+    {
+        "height": 170,
+        "weight": 72,
+        "sport": "football",
+        "position": "FW"
+    },
+    {
+        "height": 170,
+        "weight": 72,
+        "sport": "football",
+        "position": "MF"
+    },
+    {
+        "height": 187,
+        "weight": 83,
+        "sport": "football",
+        "position": "FW"
+    },
+    {
+        "height": 187,
+        "weight": 83,
+        "sport": "football",
+        "position": "MF"
+    },
+    {
+        "height": 185,
+        "weight": 75,
+        "sport": "football",
+        "position": "MF"
+    },
+    {
+        "height": 182,
+        "weight": 77,
+        "sport": "football",
+        "position": "DF"
+    },
+    {
+        "height": 181,
+        "weight": 70,
+        "sport": "football",
+        "position": "FW"
+    },
+    {
+        "height": 181,
+        "weight": 70,
+        "sport": "football",
+        "position": "MF"
+    },
+    {
+        "height": 181,
+        "weight": 70,
+        "sport": "football",
+        "position": "FW"
+    }
+]

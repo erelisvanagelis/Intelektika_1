@@ -1,0 +1,150 @@
+﻿<Window x:Class="Intelektika_1.Views.MainView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Intelektika_1A Antanas_Tamašauskas_PI19C" Height="450" Width="800">
+
+    <Window.Resources>
+        <Style TargetType="xctk:WatermarkTextBox">
+            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="Padding" Value="5,0,5,0" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="5,0,5,0" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="Margin" Value="0,0,5,0" />
+            <Setter Property="Padding" Value="5,0,5,0" />
+        </Style>
+    </Window.Resources>
+
+    <Border
+        CornerRadius="10"
+        Margin="10">
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <GroupBox Grid.Column="0" Header="Pridėti Įrašą Į Žinių Bazė">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal">
+                        <xctk:WatermarkTextBox x:Name="AddHeight" PreviewTextInput="NumberValidationTextBox" Watermark="Ūgis"/>
+                        <xctk:WatermarkTextBox x:Name="AddWeight" PreviewTextInput="NumberValidationTextBox" Watermark="Svoris" />
+                        <xctk:WatermarkTextBox x:Name="AddSport"  Watermark="Sportas" />
+                        <xctk:WatermarkTextBox x:Name="AddPosition"  Watermark="Pozicija" />
+                        <xctk:WatermarkTextBox Text="{Binding Path=Test}"  Watermark="Test" />
+                        <Button x:Name="AddData" Content="Pridėti"  />
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="2" Grid.ColumnSpan="3" x:Name="DataSetModels"  AutoGenerateColumns="False" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                            <DataGridTextColumn Header="Ūgis" Binding="{Binding Height}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Svoris" Binding="{Binding Weight}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Sportas" Binding="{Binding Sport}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Pozicija" Binding="{Binding Position}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <Button Grid.Row="4" Grid.Column="0" x:Name="ClearDataSets" Content="Išvalyti duomenų bazę" />
+                    <Button Grid.Row="4" Grid.Column="2" x:Name="AddFile" Content="Pridėti duomenis iš failo" Click="AddFile_Click"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Grid.Column="2" Header="Nustatyti Pozicija">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="5"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="5"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal">
+                        <xctk:WatermarkTextBox x:Name="DefineHeight" PreviewTextInput="NumberValidationTextBox" Watermark="Ūgis"/>
+                        <xctk:WatermarkTextBox x:Name="DefineWeight" PreviewTextInput="NumberValidationTextBox" Watermark="Svoris" />
+                        <ComboBox x:Name="Sports" SelectedValue="{Binding Path=SelectedSport, Mode=TwoWay}"/>
+                        <ComboBox x:Name="Positions" SelectedItem="{Binding Path=SelectedPosition}"/>
+                        <ComboBox ItemsSource="{Binding Path=Tests}" SelectedItem="{Binding Path=Test}"/>
+                        <Button x:Name="DefinePosition" Content="Nustatyti"/>
+                        <Button x:Name="TraceTest" Content="TraceTest"/>
+                    </StackPanel>
+
+
+                    <DataGrid Grid.Row="2" Grid.ColumnSpan="3" x:Name="DataSetDistanceModels" AutoGenerateColumns="False" CanUserAddRows="False">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Id" Binding="{Binding Id}" />
+                            <DataGridTextColumn Header="Ūgis" Binding="{Binding Height}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Svoris" Binding="{Binding Weight}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Sportas" Binding="{Binding Sport}" >
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center" />
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Pozicija" Binding="{Binding Position}" />
+                            <DataGridTextColumn Header="Atstumas" Binding="{Binding Distance}" Width="*" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Aptikimo trukmė: "/>
+                    <TextBlock Grid.Row="4" Grid.Column="2" x:Name="Time"/>
+                </Grid>
+            </GroupBox>
+        </Grid>
+    </Border>
+</Window>
